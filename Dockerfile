@@ -12,18 +12,7 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-RUN php artisan config:clear
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
-=======
 RUN npm install && npm run build
->>>>>>> ba6491f (add dockerfile)
-=======
-RUN npm install && npm run build
->>>>>>> ba6491f9d51a06ba94dd376af0c4dc978d36fdc6
 
 RUN chmod -R 777 storage bootstrap/cache
 
