@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Department;
+use App\Models\Doctor;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -36,6 +37,19 @@ class DatabaseSeeder extends Seeder
             ['description' => 'Employee']
         );
 
+        // Create some departments
+        $departments = [
+            ['name' => 'Cardiology', 'description' => 'Heart and cardiovascular system'],
+            ['name' => 'Neurology', 'description' => 'Brain and nervous system'],
+            ['name' => 'Orthopedics', 'description' => 'Bones and muscles'],
+            ['name' => 'Pediatrics', 'description' => 'Children health'],
+            ['name' => 'General Medicine', 'description' => 'General health care'],
+        ];
+
+        foreach ($departments as $dept) {
+            Department::firstOrCreate(['name' => $dept['name']], $dept);
+        }
+
         // Create admin user
         User::updateOrCreate(
             ['username' => 'admin'],
@@ -48,7 +62,7 @@ class DatabaseSeeder extends Seeder
         );
 
         // Create doctor user
-        User::updateOrCreate(
+        $doctorUser = User::updateOrCreate(
             ['username' => 'doctor'],
             [
                 'name' => 'Doctor',
@@ -58,17 +72,18 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Create some departments
-        $departments = [
-            ['name' => 'Cardiology', 'description' => 'Heart and cardiovascular system'],
-            ['name' => 'Neurology', 'description' => 'Brain and nervous system'],
-            ['name' => 'Orthopedics', 'description' => 'Bones and muscles'],
-            ['name' => 'Pediatrics', 'description' => 'Children health'],
-            ['name' => 'General Medicine', 'description' => 'General health care'],
-        ];
+        $doctorDepartment = Department::where('name', 'Cardiology')->first();
 
-        foreach ($departments as $dept) {
-            Department::create($dept);
-        }
+        Doctor::firstOrCreate(
+            ['user_id' => $doctorUser->id],
+            [
+                'department_id' => $doctorDepartment?->id ?? Department::first()->id,
+                'license_number' => 'DOC-'.str_pad($doctorUser->id, 4, '0', STR_PAD_LEFT),
+                'specialization' => 'General Practitioner',
+                'bio' => 'Experienced physician providing quality patient care.',
+                'phone' => '555-0100',
+                'profile_photo_path' => null,
+            ]
+        );
     }
 }
