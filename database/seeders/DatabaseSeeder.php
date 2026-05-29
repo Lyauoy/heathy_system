@@ -37,19 +37,6 @@ class DatabaseSeeder extends Seeder
             ['description' => 'Employee']
         );
 
-        // Create some departments
-        $departments = [
-            ['name' => 'Cardiology', 'description' => 'Heart and cardiovascular system'],
-            ['name' => 'Neurology', 'description' => 'Brain and nervous system'],
-            ['name' => 'Orthopedics', 'description' => 'Bones and muscles'],
-            ['name' => 'Pediatrics', 'description' => 'Children health'],
-            ['name' => 'General Medicine', 'description' => 'General health care'],
-        ];
-
-        foreach ($departments as $dept) {
-            Department::firstOrCreate(['name' => $dept['name']], $dept);
-        }
-
         // Create admin user
         User::updateOrCreate(
             ['username' => 'admin'],
@@ -72,17 +59,29 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        $doctorDepartment = Department::where('name', 'Cardiology')->first();
+        // Create some departments
+        $departments = [
+            ['name' => 'Cardiology', 'description' => 'Heart and cardiovascular system'],
+            ['name' => 'Neurology', 'description' => 'Brain and nervous system'],
+            ['name' => 'Orthopedics', 'description' => 'Bones and muscles'],
+            ['name' => 'Pediatrics', 'description' => 'Children health'],
+            ['name' => 'General Medicine', 'description' => 'General health care'],
+        ];
 
-        Doctor::firstOrCreate(
+        foreach ($departments as $dept) {
+            Department::firstOrCreate($dept);
+        }
+
+        $defaultDepartment = Department::firstWhere('name', 'General Medicine') ?? Department::first();
+
+        Doctor::updateOrCreate(
             ['user_id' => $doctorUser->id],
             [
-                'department_id' => $doctorDepartment?->id ?? Department::first()->id,
-                'license_number' => 'DOC-'.str_pad($doctorUser->id, 4, '0', STR_PAD_LEFT),
+                'department_id' => $defaultDepartment->id,
+                'license_number' => 'DOC-0001',
                 'specialization' => 'General Practitioner',
-                'bio' => 'Experienced physician providing quality patient care.',
-                'phone' => '555-0100',
-                'profile_photo_path' => null,
+                'bio' => 'Seeded doctor account for login.',
+                'phone' => '081234567890',
             ]
         );
     }
