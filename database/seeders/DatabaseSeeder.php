@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use App\Models\Role;
 use App\Models\Department;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -16,19 +16,47 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Create roles
-        $adminRole = Role::create(['name' => 'admin', 'description' => 'Administrator']);
-        $doctorRole = Role::create(['name' => 'doctor', 'description' => 'Doctor']);
-        $patientRole = Role::create(['name' => 'patient', 'description' => 'Patient']);
-        $employeeRole = Role::create(['name' => 'employee', 'description' => 'Employee']);
+        $adminRole = Role::firstOrCreate(
+            ['name' => 'admin'],
+            ['description' => 'Administrator']
+        );
+
+        $doctorRole = Role::firstOrCreate(
+            ['name' => 'doctor'],
+            ['description' => 'Doctor']
+        );
+
+        $patientRole = Role::firstOrCreate(
+            ['name' => 'patient'],
+            ['description' => 'Patient']
+        );
+
+        $employeeRole = Role::firstOrCreate(
+            ['name' => 'employee'],
+            ['description' => 'Employee']
+        );
 
         // Create admin user
-        User::create([
-            'name' => 'Admin',
-            'username' => 'admin',
-            'email' => 'admin@su30.com',
-            'password' => Hash::make('admin123'),
-            'role_id' => $adminRole->id,
-        ]);
+        User::updateOrCreate(
+            ['username' => 'admin'],
+            [
+                'name' => 'Admin',
+                'email' => 'admin@su30.com',
+                'password' => Hash::make('admin123'),
+                'role_id' => $adminRole->id,
+            ]
+        );
+
+        // Create doctor user
+        User::updateOrCreate(
+            ['username' => 'doctor'],
+            [
+                'name' => 'Doctor',
+                'email' => 'doctor@su30.com',
+                'password' => Hash::make('doctor123'),
+                'role_id' => $doctorRole->id,
+            ]
+        );
 
         // Create some departments
         $departments = [
